@@ -17,7 +17,7 @@ fmod INTERSECTION is
   vars MOD MOD' M0 : Module . vars ME ME' : ModuleExpression .
   vars Q Q' : Qid . vars H H' : Header . vars S S' : Sort . vars SS SS' : SortSet .
   vars NeMDS NeMDS' : NeModuleDeclSet . vars MDS MDS' MDS'' : ModuleDeclSet .
-  
+
   var EqC : EqConj . var TM : Term . var TM? : [Term] . vars TML? TML?' : [TermList] .
 
   op intersect : ModuleDeclSet ModuleDeclSet -> ModuleDeclSet [assoc comm id: none] .
@@ -106,7 +106,7 @@ fmod DETERMINISTIC-VARIABLES is
   op #string : TermList -> String .
   ---------------------------------
   eq #string(Q)              = string(Q) .
-  eq #string(Q[TL])          = #string(Q) + "[" + #string(TL) + "]" .  
+  eq #string(Q[TL])          = #string(Q) + "[" + #string(TL) + "]" .
   eq #string((NeTL , NeTL')) = #string(NeTL) + "," + #string(NeTL') .
 
   op #qid : TermList -> Qid .
@@ -141,6 +141,7 @@ Breaking equality atoms means taking an equality atom between terms of different
 ```{.maude .intersection}
 fmod BREAK-EQATOMS is
     protecting DETERMINISTIC-VARIABLES .
+    protecting FOFORMSIMPLIFY-IMPL .
 
     vars EqC EqC' : EqConj . vars MOD MOD' : Module . vars ME ME' : ModuleExpression .
     vars T T' : Term . var NV : Variable .
@@ -157,7 +158,7 @@ fmod BREAK-EQATOMS is
                                                                 /\ NV := joint-variable(MOD, MOD', T)
                                                                 /\ sortLeq(MOD, leastSort(MOD, T), leastSort(MOD, NV)) .
     ceq break-eqatoms(MOD, MOD', T != T') = T ?= NV /\ T' != NV if not (T :: Variable or T' :: Variable)
-                                                                /\ NV := joint-variable(MOD, MOD', T) 
+                                                                /\ NV := joint-variable(MOD, MOD', T)
                                                                 /\ sortLeq(MOD', leastSort(MOD', T), leastSort(MOD', NV)) .
 endfm
 ```
@@ -176,12 +177,10 @@ Output:
 
 ```{.maude .intersection}
 fmod VABS is
-    pr FOFORM .
-    pr FOFORMSIMPLIFY-IMPL .
-    pr BREAK-EQATOMS .
+    protecting BREAK-EQATOMS .
 
     vars V FV : Variable . var C : Constant . var Q : Qid . vars T T' T'' : Term .
-    vars TL TL' : TermList . vars NeTL NeTL' : NeTermList . 
+    vars TL TL' : TermList . vars NeTL NeTL' : NeTermList .
     var ME : ModuleExpression . var M : Module .
     var EqA : EqAtom . vars EqC EqC' : EqConj . var TA : TruthAtom .
 
@@ -233,10 +232,10 @@ This is a sampling of the test cases in `tests/test-modules.maude` with a more h
 fmod TEST-MODULE is
   sorts A B .
   subsort A < B .
-    
+
   op a : -> A .
   op b : -> B .
-    
+
   op f : B -> A .
   ---------------
   eq f(b) = a .
@@ -276,12 +275,10 @@ The resulting formulas will always be of the form
 ```{.maude .intersection}
 fmod PURIFICATION is
   protecting META-LEVEL .
-  protecting FOFORMSIMPLIFY-IMPL .
-  protecting CTERM-SET * ( op _;;_ to _;;;_ ) .
   protecting BREAK-EQATOMS .
 
   var Q : Qid . var TA : TruthAtom . vars EqC EqC' : EqConj . var QFF : QFForm .
-  vars ME ME' : ModuleExpression . vars M M' : Module . 
+  vars ME ME' : ModuleExpression . vars M M' : Module .
   vars FV : Variable . vars T T' T1 T2 : Term . var T? : [Term] .
   vars NeTL NeTL' : NeTermList . vars TL TL' : TermList . vars TL? TL?' : [TermList] .
 
@@ -349,6 +346,51 @@ Otherwise, generate an equality constraint at the top and purify with respect to
 endfm
 ```
 
+Traversing Terms
+================
+
+```{.maude .intersection}
+fmod TERM-TRAVERSE is
+  protecting FOFORMSIMPLIFY-IMPL .
+  protecting META-LEVEL .
+  protecting BREAK-EQATOMS .
+
+  var TO TO' : TermOp . var C : Constant . var V : Variable . var Q : Qid .
+  var T : Term . var NeTL NeTL' : NeTermList . var TL : TermList .
+
+  sorts TermOp ModuleExpressionList .
+  subsort ModuleExpression < ModuleExpressionList .
+
+  op _;_  : TermOp TermOp -> TermOp [assoc] .
+  op _[_] : TermOp TermList -> [TermList] .
+  -----------------------------------------
+  eq (TO ; TO')[T]    = TO'[TO[T]] .
+  eq TO[NeTL , NeTL'] = TO[NeTL] , TO[NeTL'] .
+
+  op onChildren : TermOp -> TermOp .
+  ----------------------------------
+  eq onChildren(TO)[C]     = C .
+  eq onChildren(TO)[V]     = V .
+  eq onChildren(TO)[Q[TL]] = Q[TO[TL]] .
+
+  op traverseUp   : TermOp -> TermOp .
+  op traverseDown : TermOp -> TermOp .
+  ------------------------------------
+  eq traverseUp  (TO)[T] = TO[onChildren(traverseUp(TO))[T]] .
+  eq traverseDown(TO)[T] = onChildren(traverseDown(TO))[TO[T]] .
+
+  op _;;;_ : ModuleExpressionList ModuleExpressionList -> ModuleExpressionList [assoc] .
+  --------------------------------------------------------------------------------------
+
+  op purify : ModuleExpressionList -> TermOp .
+  --------------------------------------------
+  ceq purify(ME ;;; MEL          [T]     = T                          if wellFormed(M, T) .
+  ceq purify(ME ;;; MEL)         [Q[TL]] = Q[purify((ME ;; MEL))[TL]] if Q inO asTemplate(ME) .
+---  ceq purify(ME ;;; ME' ;;; MEL) [Q[TL]] = FV | ((FV ?= T) /\ QFF)    if not Q inO asTemplate(ME)
+---                                                                      /\ T | QFF := purify(ME' ;;; MEL ;;; ME) [Q[TL]]
+---                                                                      /\ FV      := ??? .
+endfm
+```
 ### Examples
 
 These are over the following modules:
