@@ -234,13 +234,6 @@ fmod VABS is
 endfm
 
 
---- ### Examples
-
---- This is a sampling of the test cases in `tests/test-modules.maude` with a more
---- human-readable output, using this module:
-
---- For more test cases using more complex modules, see `tests/test-modules.maude`.
-
 --- Purification
 --- ============
 
@@ -373,12 +366,3 @@ fmod TERM-TRAVERSE is
 ---                                                                      /\ FV      := ??? .
 endfm
 
-
---- ### Examples {#examples-1}
-
---- These are over the following modules:
-
---- We've named the resulting variables nicer things for easier reading. Note that
---- the variable `V0` generated is pushed *down* to sort `I`, even though it is of
---- sort `R` in the combined module. This is because it is in a `List`, which only
---- has elements of sort `I`.
