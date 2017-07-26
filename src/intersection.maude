@@ -9,53 +9,53 @@ load module-template.maude
 load constrained-terms.maude
 
 fmod INTERSECTION is
-  protecting MODULE-TEMPLATE * ( op _;;_ to _;;;_ ) .
-  protecting RENAMING-EXPR-EVALUATION .
+    protecting MODULE-TEMPLATE * ( op _;;_ to _;;;_ ) .
+    protecting RENAMING-EXPR-EVALUATION .
 
-  var B : Bool . vars TL : TypeList . var T : Type . var AS : AttrSet .
-  var OPD : OpDecl . var OPDS : OpDeclSet .
-  vars MOD MOD' M0 : Module . vars ME ME' : ModuleExpression .
-  vars Q Q' : Qid . vars H H' : Header . vars S S' : Sort . vars SS SS' : SortSet .
-  vars NeMDS NeMDS' : NeModuleDeclSet . vars MDS MDS' MDS'' : ModuleDeclSet .
+    var B : Bool . vars TL : TypeList . var T : Type . var AS : AttrSet .
+    var OPD : OpDecl . var OPDS : OpDeclSet .
+    vars MOD MOD' M0 : Module . vars ME ME' : ModuleExpression .
+    vars Q Q' : Qid . vars H H' : Header . vars S S' : Sort . vars SS SS' : SortSet .
+    vars NeMDS NeMDS' : NeModuleDeclSet . vars MDS MDS' MDS'' : ModuleDeclSet .
 
-  var EqC : EqConj . var TM : Term . var TM? : [Term] . vars TML? TML?' : [TermList] .
+    var EqC : EqConj . var TM : Term . var TM? : [Term] . vars TML? TML?' : [TermList] .
 
-  op intersect : ModuleDeclSet ModuleDeclSet -> ModuleDeclSet [assoc comm id: none] .
-  -----------------------------------------------------------------------------------
-  eq intersect( NeMDS     , NeMDS' )     = none [owise] .
-  eq intersect( NeMDS MDS , NeMDS MDS' ) = NeMDS intersect( MDS , MDS' ) .
-  eq intersect( (sorts S ; SS .) MDS , (sorts S ; SS' .) MDS' )
-   = (sorts S .) intersect( (sorts SS .) MDS , (sorts SS' .) MDS' ) .
+    op intersect : ModuleDeclSet ModuleDeclSet -> ModuleDeclSet [assoc comm id: none] .
+    -----------------------------------------------------------------------------------
+    eq intersect( NeMDS     , NeMDS' )     = none [owise] .
+    eq intersect( NeMDS MDS , NeMDS MDS' ) = NeMDS intersect( MDS , MDS' ) .
+    eq intersect( (sorts S ; SS .) MDS , (sorts S ; SS' .) MDS' )
+    = (sorts S .) intersect( (sorts SS .) MDS , (sorts SS' .) MDS' ) .
 
-  op intersect : Module Module -> Module .
-  ----------------------------------------
-  eq intersect(MOD, MOD') = fromTemplate(resolveNames(getName(MOD) /\ getName(MOD')), intersect(asTemplate(MOD), asTemplate(MOD'))) .
-  eq upModule(H /\ H', B) = intersect(upModule(H, B), upModule(H', B)) .
+    op intersect : Module Module -> Module .
+    ----------------------------------------
+    eq intersect(MOD, MOD') = fromTemplate(resolveNames(getName(MOD) /\ getName(MOD')), intersect(asTemplate(MOD), asTemplate(MOD'))) .
+    eq upModule(H /\ H', B) = intersect(upModule(H, B), upModule(H', B)) .
 
 
 --- It will often be useful to know if a sort or an operator is in a
 --- `ModuleDeclSet`.
 
 
-  op _inS_ : Sort ModuleDeclSet -> Bool .
-  op _inO_ : Qid  ModuleDeclSet -> Bool .
-  --------------------------------------
-  eq S inS ( sorts SS . )            MDS = S in SS .
-  eq Q inO ( op Q : TL -> T [AS] . ) MDS = true .
-  eq S inS MDS = false [owise] .
-  eq Q inO MDS = false [owise] .
+    op _inS_ : Sort ModuleDeclSet -> Bool .
+    op _inO_ : Qid  ModuleDeclSet -> Bool .
+    --------------------------------------
+    eq S inS ( sorts SS . )            MDS = S in SS .
+    eq Q inO ( op Q : TL -> T [AS] . ) MDS = true .
+    eq S inS MDS = false [owise] .
+    eq Q inO MDS = false [owise] .
 
 
 --- When purifying we'll generate extra constraints we want to bubble to the top.
 --- Allowing QF equality atoms to bubble to the top is safe.
 
 
-  op _?=_ : CTerm CTerm -> EqConj [ditto] .
-  op _!=_ : CTerm CTerm -> EqConj [ditto] .
-  -----------------------------------------
-  eq TM? ?= (TM | EqC)          = (TM? ?= TM) /\ EqC .
-  eq TM? != (TM | EqC)          = (TM? != TM) /\ EqC .
-  eq Q[TML?, (TM | EqC), TML?'] = Q[TML?, TM, TML?'] | EqC .
+    op _?=_ : CTerm CTerm -> EqConj [ditto] .
+    op _!=_ : CTerm CTerm -> EqConj [ditto] .
+    -----------------------------------------
+    eq TM? ?= (TM | EqC)          = (TM? ?= TM) /\ EqC .
+    eq TM? != (TM | EqC)          = (TM? != TM) /\ EqC .
+    eq Q[TML?, (TM | EqC), TML?'] = Q[TML?, TM, TML?'] | EqC .
 
 
 --- Joint Sorts
@@ -71,23 +71,23 @@ fmod INTERSECTION is
 --- take the correct maximal sort.
 
 
-  op joint-sort : Sort ModuleDeclSet ModuleDeclSet -> Sort .
-  ----------------------------------------------------------
-  ceq joint-sort(S, MDS, MDS') = S if S inS intersect(MDS, MDS') .
-  ceq joint-sort(S, MDS, MDS') = joint-sort(S, MDS', MDS) if (not S inS MDS) /\ S inS MDS .
-  ceq joint-sort(S, MDS, MDS') = if S inS MDS'' then S else #top-sort(MDS'') fi
+    op joint-sort : Sort ModuleDeclSet ModuleDeclSet -> Sort .
+    ----------------------------------------------------------
+    ceq joint-sort(S, MDS, MDS') = S if S inS intersect(MDS, MDS') .
+    ceq joint-sort(S, MDS, MDS') = joint-sort(S, MDS', MDS) if (not S inS MDS) /\ S inS MDS .
+    ceq joint-sort(S, MDS, MDS') = if S inS MDS'' then S else #top-sort(MDS'') fi
                                if S inS MDS /\ MDS'' := intersect(connected-component(MDS, (sorts S .)), MDS') .
 
-  op joint-sort : Sort Module           Module           -> Sort .
-  op joint-sort : Sort ModuleExpression ModuleExpression -> Sort .
-  ----------------------------------------------------------------
-  eq  joint-sort(S, ME,  ME')  = joint-sort(S, upModule(ME /\ ME', true), upModule(ME /\ ME', true)) .
-  eq  joint-sort(S, MOD, MOD') = joint-sort(S, asTemplate(MOD), asTemplate(MOD')) .
+    op joint-sort : Sort Module           Module           -> Sort .
+    op joint-sort : Sort ModuleExpression ModuleExpression -> Sort .
+    ----------------------------------------------------------------
+    eq  joint-sort(S, ME,  ME')  = joint-sort(S, upModule(ME /\ ME', true), upModule(ME /\ ME', true)) .
+    eq  joint-sort(S, MOD, MOD') = joint-sort(S, asTemplate(MOD), asTemplate(MOD')) .
 
-  op #top-sort : ModuleDeclSet -> [Sort] .
-  ----------------------------------------
-  eq #top-sort( ( sorts S ; SS . )   MDS ) = top-sort( ( sorts S ; SS . )   MDS , S ) .
-  eq #top-sort( ( subsort S < S' . ) MDS ) = top-sort( ( subsort S < S' . ) MDS , S ) .
+    op #top-sort : ModuleDeclSet -> [Sort] .
+    ----------------------------------------
+    eq #top-sort( ( sorts S ; SS . )   MDS ) = top-sort( ( sorts S ; SS . )   MDS , S ) .
+    eq #top-sort( ( subsort S < S' . ) MDS ) = top-sort( ( subsort S < S' . ) MDS , S ) .
 endfm
 
 
@@ -101,36 +101,36 @@ endfm
 
 
 fmod DETERMINISTIC-VARIABLES is
-  protecting INTERSECTION .
+    protecting INTERSECTION .
 
-  var Q : Qid . var Str : String . var S : Sort .
-  vars ME ME' : ModuleExpression . vars MOD MOD' : Module . var T : Term .
-  vars NeTL NeTL' : NeTermList . var TL : TermList .
+    var Q : Qid . var Str : String . var S : Sort .
+    vars ME ME' : ModuleExpression . vars MOD MOD' : Module . var T : Term .
+    vars NeTL NeTL' : NeTermList . var TL : TermList .
 
-  op #string : TermList -> String .
-  ---------------------------------
-  eq #string(Q)              = string(Q) .
-  eq #string(Q[TL])          = #string(Q) + "[" + #string(TL) + "]" .
-  eq #string((NeTL , NeTL')) = #string(NeTL) + "," + #string(NeTL') .
+    op #string : TermList -> String .
+    ---------------------------------
+    eq #string(Q)              = string(Q) .
+    eq #string(Q[TL])          = #string(Q) + "[" + #string(TL) + "]" .
+    eq #string((NeTL , NeTL')) = #string(NeTL) + "," + #string(NeTL') .
 
-  op #qid : TermList -> Qid .
-  ---------------------------
-  eq #qid(TL) = qid(#string(TL)) .
+    op #qid : TermList -> Qid .
+    ---------------------------
+    eq #qid(TL) = qid(#string(TL)) .
 
-  op #makeVariable : Qid    Sort -> Variable .
-  op #makeVariable : String Sort -> Variable .
-  --------------------------------------------
-  eq #makeVariable(Q, S)   = qid("#makeVariable(" + string(Q) + "):" + string(S)) .
-  eq #makeVariable(Str, S) = qid("#makeVariable(" + Str + "):" + string(S)) .
+    op #makeVariable : Qid    Sort -> Variable .
+    op #makeVariable : String Sort -> Variable .
+    --------------------------------------------
+    eq #makeVariable(Q, S)   = qid("#makeVariable(" + string(Q) + "):" + string(S)) .
+    eq #makeVariable(Str, S) = qid("#makeVariable(" + Str + "):" + string(S)) .
 
-  op joint-variable : ModuleExpression ModuleExpression Term -> Variable .
-  ------------------------------------------------------------------------
-  eq joint-variable(ME, ME', T) = joint-variable(upModule(ME, true), upModule(ME', true), T) .
+    op joint-variable : ModuleExpression ModuleExpression Term -> Variable .
+    ------------------------------------------------------------------------
+    eq joint-variable(ME, ME', T) = joint-variable(upModule(ME, true), upModule(ME', true), T) .
 
-  op joint-variable : Module Module Term -> Variable .
-  ----------------------------------------------------
-  ceq joint-variable(MOD, MOD', T) = #makeVariable(#string(T), joint-sort(leastSort(MOD, T),  MOD, MOD')) if wellFormed(MOD, T) .
-  ceq joint-variable(MOD, MOD', T) = #makeVariable(#string(T) ,joint-sort(leastSort(MOD', T), MOD', MOD)) if wellFormed(MOD', T) .
+    op joint-variable : Module Module Term -> Variable .
+    ----------------------------------------------------
+    ceq joint-variable(MOD, MOD', T) = #makeVariable(#string(T), joint-sort(leastSort(MOD, T),  MOD, MOD')) if wellFormed(MOD, T) .
+    ceq joint-variable(MOD, MOD', T) = #makeVariable(#string(T) ,joint-sort(leastSort(MOD', T), MOD', MOD)) if wellFormed(MOD', T) .
 endfm
 
 
@@ -247,20 +247,20 @@ endfm
 
 
 fmod PURIFICATION is
-  protecting META-LEVEL .
-  protecting BREAK-EQATOMS .
+    protecting META-LEVEL .
+    protecting BREAK-EQATOMS .
 
-  var Q : Qid . var TA : TruthAtom . vars EqC EqC' : EqConj . var QFF : QFForm .
-  vars ME ME' : ModuleExpression . vars M M' : Module .
-  vars FV : Variable . vars T T' T1 T2 : Term . var T? : [Term] .
-  vars NeTL NeTL' : NeTermList . vars TL TL' : TermList . vars TL? TL?' : [TermList] .
+    var Q : Qid . var TA : TruthAtom . vars EqC EqC' : EqConj . var QFF : QFForm .
+    vars ME ME' : ModuleExpression . vars M M' : Module .
+    vars FV : Variable . vars T T' T1 T2 : Term . var T? : [Term] .
+    vars NeTL NeTL' : NeTermList . vars TL TL' : TermList . vars TL? TL?' : [TermList] .
 
-  op _in_ : EqConj Module -> Bool .
-  ---------------------------------
-  eq TA            in M = true .
-  eq (EqC /\ EqC') in M = (EqC in M) and (EqC' in M) .
-  eq (T ?= T')     in M = wellFormed(M, T) and wellFormed(M, T') .
-  eq (T != T')     in M = wellFormed(M, T) and wellFormed(M, T') .
+    op _in_ : EqConj Module -> Bool .
+    ---------------------------------
+    eq TA            in M = true .
+    eq (EqC /\ EqC') in M = (EqC in M) and (EqC' in M) .
+    eq (T ?= T')     in M = wellFormed(M, T) and wellFormed(M, T') .
+    eq (T != T')     in M = wellFormed(M, T) and wellFormed(M, T') .
 
 
 --- Purifying Equational Conjunctions
@@ -271,14 +271,14 @@ fmod PURIFICATION is
 --- equational atoms.
 
 
-  op purify : ModuleExpression ModuleExpression EqConj -> [EqConj] .
-  ------------------------------------------------------------------
-  eq purify(ME, ME', EqC) = purify(upModule(ME, true), upModule(ME', true), EqC) .
+    op purify : ModuleExpression ModuleExpression EqConj -> [EqConj] .
+    ------------------------------------------------------------------
+    eq purify(ME, ME', EqC) = purify(upModule(ME, true), upModule(ME', true), EqC) .
 
-  op purify : Module Module EqConj -> [EqConj] .
-  ----------------------------------------------
-  ceq purify(M, M', EqC)         = EqC if (EqC in M) or (EqC in M') .
-  eq  purify(M, M', EqC /\ EqC') = purify(M, M', EqC) /\ purify(M, M', EqC') .
+    op purify : Module Module EqConj -> [EqConj] .
+    ----------------------------------------------
+    ceq purify(M, M', EqC)         = EqC if (EqC in M) or (EqC in M') .
+    eq  purify(M, M', EqC /\ EqC') = purify(M, M', EqC) /\ purify(M, M', EqC') .
 
 
 --- If one of the sides of the equality is not in the first module, purify it with
@@ -286,8 +286,8 @@ fmod PURIFICATION is
 --- which handles the reversed case.
 
 
-  ceq purify(M, M', T1 ?= T2) = purify(M, M', purify(M, M', T1) ?= T2) if not wellFormed(M, T1) .
-  ceq purify(M, M', T1 != T2) = purify(M, M', purify(M, M', T1) != T2) if not wellFormed(M, T1) .
+    ceq purify(M, M', T1 ?= T2) = purify(M, M', purify(M, M', T1) ?= T2) if not wellFormed(M, T1) .
+    ceq purify(M, M', T1 != T2) = purify(M, M', purify(M, M', T1) != T2) if not wellFormed(M, T1) .
 
 
 --- Purifying Terms
@@ -298,14 +298,14 @@ fmod PURIFICATION is
 --- advantage of the fact that generated constraints will bubble to the top.
 
 
-  op purify : ModuleExpression ModuleExpression TermList -> [CTerm] .
-  -------------------------------------------------------------------
-  eq purify(ME, ME', TL) = purify(upModule(ME, true), upModule(ME', true), TL) .
+    op purify : ModuleExpression ModuleExpression TermList -> [CTerm] .
+    -------------------------------------------------------------------
+    eq purify(ME, ME', TL) = purify(upModule(ME, true), upModule(ME', true), TL) .
 
-  op purify : Module Module TermList -> [CTerm] .
-  -----------------------------------------------
-  eq purify(M, M', empty)          = empty .
-  eq purify(M, M', (NeTL , NeTL')) = purify(M, M', NeTL) , purify(M, M', NeTL') .
+    op purify : Module Module TermList -> [CTerm] .
+    -----------------------------------------------
+    eq purify(M, M', empty)          = empty .
+    eq purify(M, M', (NeTL , NeTL')) = purify(M, M', NeTL) , purify(M, M', NeTL') .
 
 
 --- If the term is well-formed in the first module, return it. If the top symbol of
@@ -313,11 +313,11 @@ fmod PURIFICATION is
 --- equality constraint at the top and purify with respect to the second module.
 
 
-  ceq purify(M, M', T)     = T                       if wellFormed(M, T) .
-  ceq purify(M, M', Q[TL]) = Q[purify(M, M', TL)]    if Q inO asTemplate(M) .
-  ceq purify(M, M', Q[TL]) = FV | ((FV ?= T) /\ QFF) if (not Q inO asTemplate(M)) /\ Q inO asTemplate(M')
-                                                     /\ T | QFF := purify(M', M, Q[TL])
-                                                     /\ FV      := joint-variable(M', M, T) .
+    ceq purify(M, M', T)     = T                       if wellFormed(M, T) .
+    ceq purify(M, M', Q[TL]) = Q[purify(M, M', TL)]    if Q inO asTemplate(M) .
+    ceq purify(M, M', Q[TL]) = FV | ((FV ?= T) /\ QFF) if (not Q inO asTemplate(M)) /\ Q inO asTemplate(M')
+                                                       /\ T | QFF := purify(M', M, Q[TL])
+                                                       /\ FV      := joint-variable(M', M, T) .
 endfm
 
 
@@ -326,43 +326,43 @@ endfm
 
 
 fmod TERM-TRAVERSE is
-  protecting FOFORMSIMPLIFY-IMPL .
-  protecting META-LEVEL .
-  protecting BREAK-EQATOMS .
+    protecting FOFORMSIMPLIFY-IMPL .
+    protecting META-LEVEL .
+    protecting BREAK-EQATOMS .
 
-  var TO TO' : TermOp . var C : Constant . var V : Variable . var Q : Qid .
-  var T : Term . var NeTL NeTL' : NeTermList . var TL : TermList .
+    var TO TO' : TermOp . var C : Constant . var V : Variable . var Q : Qid .
+    var T : Term . var NeTL NeTL' : NeTermList . var TL : TermList .
 
-  sorts TermOp ModuleExpressionList .
-  subsort ModuleExpression < ModuleExpressionList .
+    sorts TermOp ModuleExpressionList .
+    subsort ModuleExpression < ModuleExpressionList .
 
-  op _;_  : TermOp TermOp -> TermOp [assoc] .
-  op _[_] : TermOp TermList -> [TermList] .
-  -----------------------------------------
-  eq (TO ; TO')[T]    = TO'[TO[T]] .
-  eq TO[NeTL , NeTL'] = TO[NeTL] , TO[NeTL'] .
+    op _;_  : TermOp TermOp -> TermOp [assoc] .
+    op _[_] : TermOp TermList -> [TermList] .
+    -----------------------------------------
+    eq (TO ; TO')[T]    = TO'[TO[T]] .
+    eq TO[NeTL , NeTL'] = TO[NeTL] , TO[NeTL'] .
 
-  op onChildren : TermOp -> TermOp .
-  ----------------------------------
-  eq onChildren(TO)[C]     = C .
-  eq onChildren(TO)[V]     = V .
-  eq onChildren(TO)[Q[TL]] = Q[TO[TL]] .
+    op onChildren : TermOp -> TermOp .
+    ----------------------------------
+    eq onChildren(TO)[C]     = C .
+    eq onChildren(TO)[V]     = V .
+    eq onChildren(TO)[Q[TL]] = Q[TO[TL]] .
 
-  op traverseUp   : TermOp -> TermOp .
-  op traverseDown : TermOp -> TermOp .
-  ------------------------------------
-  eq traverseUp  (TO)[T] = TO[onChildren(traverseUp(TO))[T]] .
-  eq traverseDown(TO)[T] = onChildren(traverseDown(TO))[TO[T]] .
+    op traverseUp   : TermOp -> TermOp .
+    op traverseDown : TermOp -> TermOp .
+    ------------------------------------
+    eq traverseUp  (TO)[T] = TO[onChildren(traverseUp(TO))[T]] .
+    eq traverseDown(TO)[T] = onChildren(traverseDown(TO))[TO[T]] .
 
-  op _;;;_ : ModuleExpressionList ModuleExpressionList -> ModuleExpressionList [assoc] .
-  --------------------------------------------------------------------------------------
+    op _;;;_ : ModuleExpressionList ModuleExpressionList -> ModuleExpressionList [assoc] .
+    --------------------------------------------------------------------------------------
 
-  op purify : ModuleExpressionList -> TermOp .
-  --------------------------------------------
-  ceq purify(ME ;;; MEL          [T]     = T                          if wellFormed(M, T) .
-  ceq purify(ME ;;; MEL)         [Q[TL]] = Q[purify((ME ;; MEL))[TL]] if Q inO asTemplate(ME) .
----  ceq purify(ME ;;; ME' ;;; MEL) [Q[TL]] = FV | ((FV ?= T) /\ QFF)    if not Q inO asTemplate(ME)
----                                                                      /\ T | QFF := purify(ME' ;;; MEL ;;; ME) [Q[TL]]
----                                                                      /\ FV      := ??? .
+    op purify : ModuleExpressionList -> TermOp .
+    --------------------------------------------
+    ceq purify(ME ;;; MEL          [T]     = T                          if wellFormed(M, T) .
+    ceq purify(ME ;;; MEL)         [Q[TL]] = Q[purify((ME ;; MEL))[TL]] if Q inO asTemplate(ME) .
+---    ceq purify(ME ;;; ME' ;;; MEL) [Q[TL]] = FV | ((FV ?= T) /\ QFF)    if not Q inO asTemplate(ME)
+---                                                                        /\ T | QFF := purify(ME' ;;; MEL ;;; ME) [Q[TL]]
+---                                                                        /\ FV      := ??? .
 endfm
 
