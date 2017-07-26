@@ -25,7 +25,7 @@ fmod INTERSECTION is
     eq intersect( NeMDS     , NeMDS' )     = none [owise] .
     eq intersect( NeMDS MDS , NeMDS MDS' ) = NeMDS intersect( MDS , MDS' ) .
     eq intersect( (sorts S ; SS .) MDS , (sorts S ; SS' .) MDS' )
-    = (sorts S .) intersect( (sorts SS .) MDS , (sorts SS' .) MDS' ) .
+     = (sorts S .) intersect( (sorts SS .) MDS , (sorts SS' .) MDS' ) .
 
     op intersect : Module Module -> Module .
     ----------------------------------------
@@ -73,13 +73,13 @@ Right now we just take *any* maximal sort in `C1 /\ C2`, but we really need to t
     ceq joint-sort(S, MDS, MDS') = S if S inS intersect(MDS, MDS') .
     ceq joint-sort(S, MDS, MDS') = joint-sort(S, MDS', MDS) if (not S inS MDS) /\ S inS MDS .
     ceq joint-sort(S, MDS, MDS') = if S inS MDS'' then S else #top-sort(MDS'') fi
-                               if S inS MDS /\ MDS'' := intersect(connected-component(MDS, (sorts S .)), MDS') .
+                                 if S inS MDS /\ MDS'' := intersect(connected-component(MDS, (sorts S .)), MDS') .
 
     op joint-sort : Sort Module           Module           -> Sort .
     op joint-sort : Sort ModuleExpression ModuleExpression -> Sort .
     ----------------------------------------------------------------
-    eq  joint-sort(S, ME,  ME')  = joint-sort(S, upModule(ME /\ ME', true), upModule(ME /\ ME', true)) .
-    eq  joint-sort(S, MOD, MOD') = joint-sort(S, asTemplate(MOD), asTemplate(MOD')) .
+    eq joint-sort(S, ME,  ME')  = joint-sort(S, upModule(ME /\ ME', true), upModule(ME /\ ME', true)) .
+    eq joint-sort(S, MOD, MOD') = joint-sort(S, asTemplate(MOD), asTemplate(MOD')) .
 
     op #top-sort : ModuleDeclSet -> [Sort] .
     ----------------------------------------
