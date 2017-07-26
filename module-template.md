@@ -302,20 +302,20 @@ Here we add the notion of `ImportDecl` and `SortDecl`, so that they can be treat
     eq ( subsorts SS . )     = none .
     eq ( subsorts S < S' . ) = ( subsort S < S' . ) .
     eq ( subsorts S < S' ; S'' ; SS' . )
-    = ( subsorts S < S' .
-       subsorts S < S'' .
-       subsorts S < SS' .
-     ) .
+     = ( subsorts S < S' .
+         subsorts S < S'' .
+         subsorts S < SS' .
+       ) .
     eq ( subsorts S ; S' ; SS < S'' ; SS' . )
-    = ( subsorts S  < S'' ; SS' .
-       subsorts S' < S'' ; SS' .
-       subsorts SS < S'' ; SS' .
-     ) .
+     = ( subsorts S  < S'' ; SS' .
+         subsorts S' < S'' ; SS' .
+         subsorts SS < S'' ; SS' .
+       ) .
     eq ( subsorts S ; SS < S' ; SS' < SPS . )
-    = ( subsorts S  < S' ; SS' .
-       subsorts SS < S' ; SS' .
-       subsorts      S' ; SS'  < SPS .
-     ) .
+     = ( subsorts S  < S' ; SS' .
+         subsorts SS < S' ; SS' .
+         subsorts      S' ; SS'  < SPS .
+       ) .
 ```
 
 -   `top-sort : ModuleDeclSet Sort -> [Sort]` gives the top sort of a connected component with the given sort in it.
@@ -333,17 +333,17 @@ Here we add the notion of `ImportDecl` and `SortDecl`, so that they can be treat
     -------------------------------------------------------------------------
     eq connected-component(MDS, MDS') = MDS' [owise] .
     eq connected-component( ( sorts S ; S' ; SS . ) ( subsort S < S' . ) MDS
-                        , ( sorts S ; SS' . ) MDS'
-                        )
-    = connected-component( ( sorts S ; S' ; SS . ) MDS
-                        , ( sorts S ; S' ; SS' . ) ( subsort S < S' . ) MDS'
-                        ) .
+                          , ( sorts S ; SS' . ) MDS'
+                          )
+     = connected-component( ( sorts S ; S' ; SS . ) MDS
+                          , ( sorts S ; S' ; SS' . ) ( subsort S < S' . ) MDS'
+                          ) .
     eq connected-component( ( sorts S ; S' ; SS . ) ( subsort S' < S . ) MDS
-                        , ( sorts S ; SS' . ) MDS'
-                        )
-    = connected-component( ( sorts S ; S' ; SS . ) MDS
-                        , ( sorts S ; S' ; SS' . ) ( subsort S' < S . ) MDS'
-                        ) .
+                          , ( sorts S ; SS' . ) MDS'
+                          )
+     = connected-component( ( sorts S ; S' ; SS . ) MDS
+                          , ( sorts S ; S' ; SS' . ) ( subsort S' < S . ) MDS'
+                          ) .
 
     op tag-sorts : Qid ModuleDeclSet -> [ModuleDeclSet] .
     -----------------------------------------------------
@@ -352,8 +352,8 @@ Here we add the notion of `ImportDecl` and `SortDecl`, so that they can be treat
     eq tag-sorts(Q, ( sorts S . ))           = ( sorts S{Q} . ) .
     eq tag-sorts(Q, ( subsort S < S' . ))    = ( subsort S{Q} < S'{Q} . ) .
     eq tag-sorts(Q, ( sorts S ; S' ; SS . )) = tag-sorts(Q, ( sorts S . ))
-                                             tag-sorts(Q, ( sorts S' . ))
-                                             tag-sorts(Q, ( sorts SS . )) .
+                                               tag-sorts(Q, ( sorts S' . ))
+                                               tag-sorts(Q, ( sorts SS . )) .
 ```
 
 -   `_<<_ : ModuleDeclSet Substitution -> [ModuleDeclSet]` lifts the substitution application operator `_<<_` over `ModuleDeclSet`.
@@ -376,7 +376,7 @@ Here we add the notion of `ImportDecl` and `SortDecl`, so that they can be treat
     -------------------------------------------------------------------
     eq  match MDS with none  = empty .
     ceq match MDS with NeMDS = SUBSTS if NeMDS' := MDS ( sorts var<SortSet>('##SSCTX##) . ) var<ModuleDeclSet>('##MDSCTX##)
-                                    /\ SUBSTS := #subsumesWith(upModule('MODULE-DECLARATION, true), upTerm(NeMDS'), upTerm(NeMDS)) .
+                                      /\ SUBSTS := #subsumesWith(upModule('MODULE-DECLARATION, true), upTerm(NeMDS'), upTerm(NeMDS)) .
 
     op resolveNames : ModuleDeclSet -> ModuleDeclSet .
     --------------------------------------------------
