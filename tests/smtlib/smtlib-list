@@ -1,0 +1,84 @@
+This is a basic script which checks out all of the SMT-LIB library.
+Note that Sage2 is too big to fit in QF_BV, so it has its own repository, but this script nests it inside of QF_BV so that it looks like everything is one repository. 
+Keep this in mind when working with Sage2.
+Non-incremental benchmarks are checked out at the top level, while incremental benchmarks are checked out in the subdirectory incremental.
+
+Non Incremental
+---------------
+
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/ABVFP.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/ALIA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/AUFBVDTLIA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/AUFDTLIA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/AUFLIA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/AUFLIRA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/AUFNIRA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/BV.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/BVFP.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/FP.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/LIA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/LRA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/NIA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/NRA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_ABV.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_ABVFP.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_ALIA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_ANIA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_AUFBV.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_AUFLIA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_AUFNIA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_AX.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_BV.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/Sage2.git QF_BV/Sage2
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_BVFP.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_DT.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_FP.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_IDL.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_LIA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_LIRA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_LRA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_NIA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_NIRA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_NRA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_RDL.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_UF.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_UFBV.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_UFIDL.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_UFLIA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_UFLRA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_UFNIA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_UFNRA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/UF.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/UFBV.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/UFDT.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/UFDTLIA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/UFIDL.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/UFLIA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/UFLRA.git
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/UFNIA.git
+
+Incremental
+-----------
+
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/ABVFP.git incremental/ABVFP
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/ALIA.git incremental/ALIA
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/ANIA.git incremental/ANIA
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/AUFNIRA.git incremental/AUFNIRA
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/BV.git incremental/BV
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/BVFP.git incremental/BVFP
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/LIA.git incremental/LIA
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/LRA.git incremental/LRA
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/QF_ABVFP.git incremental/QF_ABVFP
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/QF_ALIA.git incremental/QF_ALIA
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/QF_ANIA.git incremental/QF_ANIA
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/QF_AUFLIA.git incremental/QF_AUFLIA
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/QF_BV.git incremental/QF_BV
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/QF_BVFP.git incremental/QF_BVFP
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/QF_FP.git incremental/QF_FP
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/QF_LIA.git incremental/QF_LIA
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/QF_LRA.git incremental/QF_LRA
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/QF_NIA.git incremental/QF_NIA
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/QF_UFLIA.git incremental/QF_UFLIA
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/QF_UFLRA.git incremental/QF_UFLRA
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/QF_UFNIA.git incremental/QF_UFNIA
+https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks-inc/UFLRA.git incremental/UFLRA
