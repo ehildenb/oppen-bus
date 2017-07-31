@@ -5,6 +5,7 @@ pandoc-tangle --from markdown --to code-maude --code univ         universal-cons
 pandoc-tangle --from markdown --to code-maude --code cterm        constrained-terms.md      > src/constrained-terms.maude
 pandoc-tangle --from markdown --to code-maude --code msh          msh.md                    > src/msh.maude
 pandoc-tangle --from markdown --to code-maude --code intersection intersection.md           > src/intersection.maude
+pandoc-tangle --from markdown --to code-maude --code smtlib       smtlib.md                 > src/smtlib.maude
 # pandoc-tangle --from markdown --to code-maude --code state-space     state-space.md            > src/state-space.maude
 
 
