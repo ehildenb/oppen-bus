@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://clc-gitlab.cs.uiowa.edu:2443/SMT-LIB-benchmarks/QF_UF.git
+	branch = master
+	commit = 59a35bce254708fb465d34cad83748e60a132da4
+	parent = dc573efd9fd0c879f96e10410d39dd71b13d1db2
+	cmdver = 0.3.1
