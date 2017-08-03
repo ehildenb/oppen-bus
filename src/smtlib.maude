@@ -1,11 +1,22 @@
 --- SMT-LIB Interpreter
 --- ===================
 
+--- Take the following `smtlib` definition:
+
+--- This should correspond to the following `maude` definition (and query):
+
+--- Read SMT-LIB format
+--- -------------------
+
 
 load constrained-terms.maude
 load module-template.maude
 
 fmod SMT-LIB is
     protecting CTERM-SET .
+
+    sorts FName Args SExp .
+
+    op (__) : FName Args -> SExp .
 endfm
 
